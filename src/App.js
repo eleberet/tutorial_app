@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
 
@@ -12,14 +12,13 @@ function App() {
 
   //const bodyInputRef = useRef() //хук получить доступ к дом элементу и оттуда взять value
 
-
   const createNewPost = (newPost) => {
     setPosts([newPost, ...posts])
   }
 
   return (
     <div className="App">
-      <PostForm create = {createNewPost} />
+      <PostForm create={createNewPost} />
       <PostList posts={posts} title={'Список постов'} />
     </div>
   );
