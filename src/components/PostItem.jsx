@@ -1,9 +1,14 @@
 //import React, { useState } from "react";
 import '../styles/App.css'
 
-function PostItem(props) {
+function PostItem({ deletePost, ...props }) {
 
     //console.log(props.key)
+
+    // const handler = () => {
+    //     console.log(props.number)
+    //     deletePost(props.number)
+    // }
 
     return (
         <div className="App">
@@ -15,7 +20,7 @@ function PostItem(props) {
                     </div>
                 </div>
                 <div className="post__btns">
-                    <button>Delete</button>
+                    <button onClick={() => deletePost(props.post.id)}> Delete </button>
                 </div>
             </div>
         </div>
