@@ -3,7 +3,11 @@ import PostItem from "./PostItem";
 
 const PostList = ({ posts, title, deletePost }) => {
 
-
+  if (!posts.length) {
+    return (
+      <h1 style={{ textAlign: 'center' }}>Посты не найдены</h1>
+    )
+  }
 
   return (
     <div>
@@ -11,7 +15,7 @@ const PostList = ({ posts, title, deletePost }) => {
         {title}
       </h1>
       {posts.map((post, index) =>
-        <PostItem deletePost={deletePost} number={index + 1} post={post} key={post.id} id = {post.id} />
+        <PostItem deletePost={deletePost} number={index + 1} post={post} key={post.id} id={post.id} />
       )}
     </div>
   );

@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from "react";
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
-import MySelect from "./components/UI/select/MySelect";
-import MyInput from "./components/UI/input/MyInput";
 import PostFilter from "./components/PostFilter";
+import MyModal from "./components/UI/MyModal/MyModal";
+import MyButton from "./components/UI/button/MyButton";
 
 function App() {
 
@@ -19,11 +19,13 @@ function App() {
 
   // новый стейт для хранения значения фильтра и отсортированной выборки для отрисовки
   const [filter, setFilter] = useState({ sort: '', query: '' })
+  // стейт для отрисовки модального окна
+  const [modal, setModal] = useState(false)
 
   // пример хука UseMemo - кеширование функции
   const sortedPosts = useMemo(
     () => { //коллбек функция
-      console.log('getSortedPosts')
+      //console.log('getSortedPosts')
       if (filter.sort) { // логика сортировки
         return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
       }
@@ -41,6 +43,7 @@ function App() {
 
   const createNewPost = (newPost) => {
     setPosts([newPost, ...posts])
+    setModal(false)
   }
 
   const deletePost = (postId) => {
@@ -54,17 +57,30 @@ function App() {
 
   return (
     <div className="App">
-      <PostForm create={createNewPost} />
+
+      <MyButton style={{marginTop:20}} onClick={() => setModal(true)}>
+        Add new post
+      </MyButton>
+
+
+      <MyModal visible={modal} setVisible={setModal}>
+        <PostForm create={createNewPost} />
+      </MyModal>
+
+
       <hr style={{ margin: '15px 0' }} />
-      
-      <PostFilter 
+
+      <PostFilter
         filter={filter}
         setFilter={setFilter}
       />
 
-      {sortedAndSearchedPosts.length ?
-        <PostList deletePost={deletePost} posts={sortedAndSearchedPosts} title={'Список постов'} />
-        : <h1 style={{ textAlign: 'center' }}>Посты не найдены</h1>}
+      <PostList
+        deletePost={deletePost}
+        posts={sortedAndSearchedPosts}
+        title={'Список постов'}
+      />
+
     </div>
   );
 }
