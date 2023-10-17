@@ -1,0 +1,27 @@
+.loader {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 5px dashed teal;
+    animation: rotate 3s infinite linear;
+}
+
+/*
+Анимация - ключевые кадры @keyframes
+ from - стартовая точка 0 градусов повернуто изображение
+ to - конечная точка, те окружность будет делать полный круг
+
+ параметры анимации задаем в animation 
+ - rotate - функция с ключевыми кадрами
+ 1сек оборот, бесконечный цикл - infinite
+  тип анимации - lintar - линейный, хз шо это
+*/
+@keyframes rotate {
+    from {
+        transform: rotate(0deg) scale(2);
+    }
+    to {
+        transform: rotate(360deg) scale(1);
+    }
+    
+}

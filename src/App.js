@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
 import PostFilter from "./components/PostFilter";
 import MyModal from "./components/UI/MyModal/MyModal";
 import MyButton from "./components/UI/button/MyButton";
 import { usePosts } from "./hooks/usePosts";
-import axios from 'axios';
+import PostService from "./API/PostService";
+import Loader from "./components/UI/Loader/Loader";
 
 function App() {
 
@@ -31,20 +32,31 @@ function App() {
     setPosts([newPost, ...posts])
     setModal(false)
   }
+  // стейт для отображения индикатора загрузки данных
+  const [isPostLoading, setIsPostLoading] = useState(false)
 
   /* 
   хук useEffect содержит коллбек - вызываемую ф() и список зависимостей
   при которых она вызывается, если [] пусто то вызывается при первом запуске единожды
   те на стадии Mounting 
   lifecycle react component - Mounting, Updating, and Unmounting.
+  если хук возвращает ф() то она выполняется на стадии Unmounting
+  return () => {
+    чтото что делает отчистку(например)
+  }
   */
   useEffect(() => {
     fetchPosts()
   }, [])
 
   async function fetchPosts() {
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
-    setPosts(response.data)
+    setIsPostLoading(true)
+    setTimeout(async () => {
+      const response = await PostService.getAll()
+      setPosts(response)
+      setIsPostLoading(false)
+    }, 1000)
+
   }
 
   const deletePost = (postId) => {
@@ -54,7 +66,6 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={fetchPosts}>Click</button>
       <MyButton style={{ marginTop: 20 }} onClick={() => setModal(true)}>
         Add new post
       </MyButton>
@@ -70,12 +81,16 @@ function App() {
         setFilter={setFilter}
       />
 
-      <PostList
-        deletePost={deletePost}
-        posts={sortedAndSearchedPosts}
-        title={'Список постов'}
-      />
-
+      {isPostLoading
+        ? <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+          <Loader />
+        </div>
+        : <PostList
+          deletePost={deletePost}
+          posts={sortedAndSearchedPosts}
+          title={'Список постов'}
+        />
+      }
     </div>
   );
 }
