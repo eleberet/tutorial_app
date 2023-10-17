@@ -24,5 +24,26 @@
 }
 
 .post__btns {
-    padding-left: 300px; 
+    padding-left: 300px;
+}
+/*Стили для анмации React Transition в компоненте PostList*/
+
+/*стиль добавления записи*/
+.post-enter { /*начальная точка отображения*/
+    transform: translateX(-550px);
+}
+
+.post-enter-active { /*анимация добавления*/
+    transform: translateX(0px);
+    transition: all 500ms ease-in;
+}
+
+/*стиль удаления записи*/
+.post-exit { /*начальная точка отображения*/
+    opacity: 1;
+}
+
+.post-exit-active { /*анимация удаления*/
+    transform: translateX(-550px);
+    transition: all 500ms ease-in;
 }

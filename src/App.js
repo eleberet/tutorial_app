@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
 import PostFilter from "./components/PostFilter";
 import MyModal from "./components/UI/MyModal/MyModal";
 import MyButton from "./components/UI/button/MyButton";
+import { usePosts } from "./hooks/usePosts";
+import axios from 'axios';
 
 function App() {
 
@@ -21,52 +23,45 @@ function App() {
   const [filter, setFilter] = useState({ sort: '', query: '' })
   // стейт для отрисовки модального окна
   const [modal, setModal] = useState(false)
-
-  // пример хука UseMemo - кеширование функции
-  const sortedPosts = useMemo(
-    () => { //коллбек функция
-      //console.log('getSortedPosts')
-      if (filter.sort) { // логика сортировки
-        return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
-      }
-      return posts
-    },
-    [filter.sort, posts] //массив обьектов при изменении которых отрабатывает коллбек
-  )
-
-  const sortedAndSearchedPosts = useMemo(
-    () => {
-      return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query.toLowerCase()))
-    },
-    [filter.query, sortedPosts]
-  )
+  // кастомный хук usePosts который внутри реализует и кеширует
+  // логику сортировки и фильтрации записей
+  const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
   const createNewPost = (newPost) => {
     setPosts([newPost, ...posts])
     setModal(false)
   }
 
+  /* 
+  хук useEffect содержит коллбек - вызываемую ф() и список зависимостей
+  при которых она вызывается, если [] пусто то вызывается при первом запуске единожды
+  те на стадии Mounting 
+  lifecycle react component - Mounting, Updating, and Unmounting.
+  */
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+  async function fetchPosts() {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
+    setPosts(response.data)
+  }
+
   const deletePost = (postId) => {
     setPosts(posts.filter((post) => post.id !== postId))
   }
 
-  // сортировка переехала в отдельный компонент PostFilter
-  // const sortPosts = (sort) => { 
-  //   setSelectedSort(sort);
-  // }
 
   return (
     <div className="App">
-
-      <MyButton style={{marginTop:20}} onClick={() => setModal(true)}>
+      <button onClick={fetchPosts}>Click</button>
+      <MyButton style={{ marginTop: 20 }} onClick={() => setModal(true)}>
         Add new post
       </MyButton>
-
 
       <MyModal visible={modal} setVisible={setModal}>
         <PostForm create={createNewPost} />
       </MyModal>
-
 
       <hr style={{ margin: '15px 0' }} />
 
