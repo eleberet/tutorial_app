@@ -7,6 +7,7 @@ import MyButton from "./components/UI/button/MyButton";
 import { usePosts } from "./hooks/usePosts";
 import PostService from "./API/PostService";
 import Loader from "./components/UI/Loader/Loader";
+import { useFetching } from "./hooks/useFetching";
 
 function App() {
 
@@ -32,8 +33,13 @@ function App() {
     setPosts([newPost, ...posts])
     setModal(false)
   }
-  // стейт для отображения индикатора загрузки данных
-  const [isPostLoading, setIsPostLoading] = useState(false)
+  //кастомный хук для отображения индикатора загрузки данных и обработки ошибок
+  const [fetchPosts, isPostLoading, postError] = useFetching(
+    async () => {
+      const response = await PostService.getAll()
+      setPosts(response)
+    }
+  )
 
   /* 
   хук useEffect содержит коллбек - вызываемую ф() и список зависимостей
@@ -49,15 +55,6 @@ function App() {
     fetchPosts()
   }, [])
 
-  async function fetchPosts() {
-    setIsPostLoading(true)
-    setTimeout(async () => {
-      const response = await PostService.getAll()
-      setPosts(response)
-      setIsPostLoading(false)
-    }, 1000)
-
-  }
 
   const deletePost = (postId) => {
     setPosts(posts.filter((post) => post.id !== postId))
@@ -80,7 +77,8 @@ function App() {
         filter={filter}
         setFilter={setFilter}
       />
-
+      {postError &&
+        <h1>Произошла ошибка ${postError}</h1>}
       {isPostLoading
         ? <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
           <Loader />
